@@ -1,8 +1,8 @@
-package com.example.sharenow.controllers;
+package com.example.sharenow.controller;
 
 import com.example.sharenow.entities.UserData;
 import com.example.sharenow.repositories.UserDataRepository;
-import com.example.sharenow.services.Status;
+import com.example.sharenow.utility.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

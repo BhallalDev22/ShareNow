@@ -1,4 +1,4 @@
-package com.example.sharenow.services;
+package com.example.sharenow.utility;
 
 public enum Status {
     SUCCESS,
