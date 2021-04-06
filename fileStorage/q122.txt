@@ -1,0 +1,41 @@
+#pragma GCC optimize("Ofast","unroll-loops","omit-frame-pointer","inline") //Optimization flags
+#pragma GCC option("arch=native","tune=native","no-zero-upper") //Enable AVX
+#pragma GCC target("avx2")  //Enable AVX
+
+#include <bits/stdc++.h>
+#include <iostream>
+
+#define boost ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+#define ll long long int
+#define lld long double
+#define f(i,a,b) for(int i=a;i<b;i++)
+#define mod 1000000007
+using namespace std;
+
+const double PI = 2*acos(0.0);
+
+void solve()
+{
+    
+}
+
+int main()
+{
+	boost;
+	
+	#ifndef ONLINE_JUDGE
+	freopen("input.txt", "r", stdin);
+	freopen("output.txt", "w", stdout);
+	#endif // ONLINE_JUDGE
+
+	int t,t1;
+	cin>>t;
+	t1=t;
+	while(t--)
+	{
+	    //cout<<"Case #"<<t1-t<<": ";
+		solve();
+		cout<<endl;
+	}
+	return 0;
+}
