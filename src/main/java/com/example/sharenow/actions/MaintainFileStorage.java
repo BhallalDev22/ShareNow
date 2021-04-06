@@ -18,7 +18,13 @@ public class MaintainFileStorage {
 
     public List<FileInfo> getFileInfoWithTimeLessThanGivenTime(Timestamp timestamp) {
         List<FileInfo> fileInfoList = new ArrayList<>();
-        fileInfoList.addAll(fileRepository.findFileWithTimeLessThanGivenTime(timestamp));
+        try {
+            fileInfoList.addAll(fileRepository.findFileWithTimeLessThanGivenTime(timestamp));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            // System.out.println(e.getMessage());
+        }
         return fileInfoList;
     }
 

@@ -1,13 +1,16 @@
 package com.example.sharenow.service;
 
 import com.example.sharenow.entity.FileInfo;
+import com.example.sharenow.utility.HandleFile;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -69,6 +72,10 @@ public class FileStorageService {
         }
     }
 
+    public void breakAndStore(MultipartFile file,FileInfo fileInfo) {
+        HandleFile.breakAndStoreFile(file,fileInfo.getFileId());
+    }
+
     public Resource downLoadFile(String uniqueFileName) {
         Path path = Paths.get(fileStorageLocation).toAbsolutePath().resolve(uniqueFileName);
 
@@ -85,5 +92,26 @@ public class FileStorageService {
         } else {
             throw new RuntimeException("File doesn't exist or is not readable");
         }
+    }
+
+    public Resource downloadFilePart(String fileId) {
+        String downloadDir = "/home/aashish/Desktop/UploadDirectory" + "/" + fileId + "_1";
+        Path path = Paths.get(downloadDir).toAbsolutePath();
+        //System.out.println(path);
+
+        Resource resource;
+        try {
+            resource = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            // e.printStackTrace();
+            throw new RuntimeException("Issue in reading file", e);
+        }
+
+        if(resource.exists()) {
+            return resource;
+        } else {
+            throw new RuntimeException("File doesn't exist or is not readable");
+        }
+
     }
 }
