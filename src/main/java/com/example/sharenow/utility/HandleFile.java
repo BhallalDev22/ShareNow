@@ -19,6 +19,13 @@ public class HandleFile {
         file.delete();
     }
 
+    public static void deleteFileChunkFromStorage(String fileId) {
+        String pathname = uploadDir+ "/" + fileId ;
+        // System.out.println(pathname);
+        File file = new File(pathname);
+        file.delete();
+    }
+
     public static void breakAndStoreFile(MultipartFile file, String fileId) {
         try {
             InputStream is = file.getInputStream();

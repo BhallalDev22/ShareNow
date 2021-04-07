@@ -28,7 +28,7 @@ public class FileInfo {
     @Column(columnDefinition = "integer default 1")
     private int noOfHours;
 
-    @Column(columnDefinition = "timestamp default CURRENT_TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP")
     private Timestamp uploadTimestamp;
 
     public FileInfo() {
