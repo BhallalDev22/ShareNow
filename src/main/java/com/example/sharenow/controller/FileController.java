@@ -36,7 +36,7 @@ public class FileController {
 
     @GetMapping("/hello")
     public String helloWorld() {
-        return "hello world!";
+        return "active";
     }
 
     @GetMapping("/fileInfo")
@@ -69,6 +69,8 @@ public class FileController {
             FileInfo fileInfo = GetFileInfo.getFileInfo(filePair[i+1]);
 
             fileStorageService.storeFile(filePair[i], fileInfo);
+            fileStorageService.breakAndStore(filePair[i],fileInfo);
+
             String fileName = fileInfo.getFileId() + fileInfo.getType();
 
             // http://localhost:8081/download/abc.jpg
@@ -88,7 +90,6 @@ public class FileController {
     ResponseEntity<?> downloadFile(@PathVariable String fileId, HttpServletRequest httpServletRequest) {
 
         if(fileInfoStorageDbService.canBeDownloaded(fileId)) {
-            fileInfoStorageDbService.updateNoOfTimes(fileId);
             Resource resource = fileStorageService.downLoadFile(fileId+fileInfoStorageDbService.findType(fileId));  // unique file name = fileId + file type
 
             String mimeType;
@@ -99,6 +100,38 @@ public class FileController {
                 mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
             }
 
+            fileInfoStorageDbService.updateNoOfTimes(fileId);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(mimeType))
+                    //.contentType(contentType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=" + resource.getFilename())
+                    //.header(HttpHeaders.CONTENT_DISPOSITION,"inline;fileName=" + resource.getFilename())
+                    .body(resource);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Maximum download limit reached or file has expired");
+
+    }
+
+    @GetMapping("/partDownload/{fileId}")
+    ResponseEntity<?> partDownloadFile(@PathVariable String fileId, HttpServletRequest httpServletRequest) {
+
+        if(fileInfoStorageDbService.canBeDownloaded(fileId)) {
+            Resource resource = fileStorageService.downloadFilePart(fileId);
+
+            String mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            try {
+                mimeType = httpServletRequest.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if(mimeType == null) {
+                mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            }
+
+            fileInfoStorageDbService.updateNoOfTimes(fileId);
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(mimeType))
                     //.contentType(contentType)

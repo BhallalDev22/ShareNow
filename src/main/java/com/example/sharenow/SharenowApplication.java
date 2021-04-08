@@ -12,14 +12,16 @@ public class SharenowApplication {
 
     public static void main(String[] args) {
         ApplicationContext applicationContext = SpringApplication.run(SharenowApplication.class, args);
+
         ServerSync serverSync = applicationContext.getBean(ServerSync.class);
         serverSync.sync();
 
         Thread t = new Thread(() -> {
             while (true) {
-                new MaintainFileStorage().deleteExtraFiles();
+                MaintainFileStorage maintainFileStorage = applicationContext.getBean(MaintainFileStorage.class);
+                maintainFileStorage.deleteExtraFiles();
                 try {
-                    Thread.sleep(24*60*60*1000);
+                    Thread.sleep(20*1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
