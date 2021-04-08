@@ -1,14 +1,19 @@
 package com.example.sharenow;
 
 import com.example.sharenow.actions.MaintainFileStorage;
+import com.example.sharenow.service.ServerSync;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 public class SharenowApplication {
 
+
     public static void main(String[] args) {
-        SpringApplication.run(SharenowApplication.class, args);
+        ApplicationContext applicationContext = SpringApplication.run(SharenowApplication.class, args);
+        ServerSync serverSync = applicationContext.getBean(ServerSync.class);
+        serverSync.sync();
 
         Thread t = new Thread(() -> {
             while (true) {
@@ -21,7 +26,6 @@ public class SharenowApplication {
             }
         });
         t.start();
-
     }
 
 }

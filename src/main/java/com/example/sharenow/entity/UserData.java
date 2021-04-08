@@ -3,45 +3,43 @@ package com.example.sharenow.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
-@Table(name = "UserData", schema = "ShareNow")
 public class UserData {
 
     @Id
-    @Column(name = "UserName", length = 100)
-    private String UserName;
+    @Column(length = 100)
+    private String userName;
 
-    @Column(name = "Password", length = 100)
-    private String Password;
+    @Column(length = 100)
+    private String password;
 
-    @Column(name = "Type", length = 50)
-    private String Type;
+    @Column(length = 50)
+    private String type;
 
     public String getUserName() {
-        return UserName;
+        return userName;
     }
 
     public void setUserName(String userName) {
-        UserName = userName;
+        userName = userName;
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        password = password;
     }
 
     public String getType() {
-        return Type;
+        return type;
     }
 
     public void setType(String type) {
-        Type = type;
+        type = type;
     }
 
     @Override
@@ -49,20 +47,20 @@ public class UserData {
         if (this == o) return true;
         if (!(o instanceof UserData)) return false;
         UserData user = (UserData) o;
-        return Objects.equals(UserName, user.UserName) &&
-                Objects.equals(Password, user.Password);
+        return Objects.equals(userName, user.userName) &&
+                Objects.equals(password, user.password);
     }
     @Override
     public int hashCode() {
-        return Objects.hash(UserName, Password,
-                Type);
+        return Objects.hash(userName, password,
+                type);
     }
     @Override
     public String toString() {
         return "UserData{" +
-                ", UserName='" + UserName + '\'' +
-                ", Password='" + Password + '\'' +
-                ", Type=" + Type +
+                ", UserName='" + userName + '\'' +
+                ", Password='" + password + '\'' +
+                ", Type=" + type +
                 '}';
     }
 }
