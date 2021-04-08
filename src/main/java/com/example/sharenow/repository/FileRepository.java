@@ -22,4 +22,7 @@ public interface FileRepository extends CrudRepository<FileInfo,String> {
     @Query(value = "DELETE FROM file_info WHERE file_info.file_id IN (SELECT file_id FROM file_info f WHERE (SELECT TIMESTAMPADD(SECOND, f.no_of_hours * 3600, f.upload_timestamp)) < CURRENT_TIMESTAMP )", nativeQuery = true)
     void deleteFileWithTimeLessThanGivenTime();
 
+    @Query(value = "SELECT file_id FROM file_info", nativeQuery = true)
+    List<String> findFileId();
+
 }

@@ -8,11 +8,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.sharenow.utility.HandleFile.*;
 
 @Service
 public class ServerSync {
@@ -22,6 +26,14 @@ public class ServerSync {
 
     @Autowired
     FileRepository fileRepository;
+
+    public static List<String> oldFileIdList;
+    public static List<String> newFileIdList;
+
+    public void getOldFileIdList() {
+        oldFileIdList = new ArrayList<>();
+        oldFileIdList.addAll(fileRepository.findFileId());
+    }
 
     public void sync(){
 
@@ -62,10 +74,92 @@ public class ServerSync {
 
                 for(FileInfo file : fileInfo){
                     fileRepository.save(file);
+                    newFileIdList.add(file.getFileId());
                 }
 
             }catch (Exception e){
                 e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void updateFilesInStorage() {
+        for(String fileId : oldFileIdList) {
+            if(!newFileIdList.contains(fileId)) {
+                deleteFileFromStorage(fileId + fileRepository.findById(fileId).get().getType());
+                deleteFileChunkFromStorage(fileId + "_1");
+                deleteFileChunkFromStorage(fileId + "_2");
+                oldFileIdList.remove(fileId);
+            }
+        }
+
+        for(String fileId : newFileIdList) {
+            if(!oldFileIdList.contains(fileId)) {
+                getFile(fileId);
+            }
+        }
+    }
+
+    public void getFile(String fileId) {
+
+        String fileName = fileId + fileRepository.findById(fileId).get().getType();
+        BufferedReader reader;
+        String line;
+        StringBuilder responseContent = new StringBuilder();
+
+        try {
+
+        URL url = new URL("http://localhost:8082/download/" + fileId);
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();;
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5000);
+
+        int status = connection.getResponseCode();
+
+            if(status!=200){
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                while( (line = reader.readLine())!= null){
+                    responseContent.append(line);
+                }
+                reader.close();
+                System.out.println(responseContent);
+            }
+            else {
+                File file = new File("/home/aashish/IntelliJ_projects/ShareNow/fileStorage/" + fileName);
+                file.createNewFile();
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                InputStream is = null;
+                try {
+                    is = url.openStream();
+                    byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
+                    int n;
+
+                    while ((n = is.read(byteChunk)) > 0) {
+                        baos.write(byteChunk, 0, n);
+                    }
+                } catch (IOException e) {
+                    System.err.printf("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+                    e.printStackTrace();
+                    // Perform any other exception handling that's appropriate.
+                } finally {
+                    if (is != null) {
+                        is.close();
+                    }
+                }
+
+                byte[] data = baos.toByteArray();
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(data);
+                fos.flush();
+                fos.close();
+
+                MultipartFile multipartFile = (MultipartFile) file;
+                breakAndStoreFile(multipartFile, fileId);
             }
         } catch (Exception e) {
             e.printStackTrace();
