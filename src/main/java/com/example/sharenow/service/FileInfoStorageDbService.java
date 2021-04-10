@@ -27,6 +27,11 @@ public class FileInfoStorageDbService {
         return fileInfoList;
     }
 
+    public List<FileInfo> getUserFileInfo(String ownerName) {
+        List<FileInfo> fileInfoList = new ArrayList<>(fileRepository.findByOwnerName(ownerName));
+        return fileInfoList;
+    }
+
     public void addFileInfo(FileInfo fileInfo) {
         fileRepository.save(fileInfo);
     }

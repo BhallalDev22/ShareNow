@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +37,28 @@ public class ServerSync {
         oldFileIdList.addAll(fileRepository.findFileId());
     }
 
+    public boolean checkIfOtherServerIsActive() {
+        try {
+            URL url = new URL("http://localhost:8082/hello");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+            String responseLine = br.readLine();
+            if(responseLine.equals("active"))
+                return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void sync(){
 
-        userDataRepository.deleteAll();
+        if(checkIfOtherServerIsActive()) {
+            userDataRepository.deleteAll();
+            fileRepository.deleteAll();
+        }
+
         try {
             URL url = new URL("http://localhost:8082/sync/userData");
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
@@ -60,7 +81,6 @@ public class ServerSync {
             e.printStackTrace();
         }
 
-        fileRepository.deleteAll();
         try {
             URL url = new URL ("http://localhost:8082/sync/userFiles");
             HttpURLConnection con = (HttpURLConnection)url.openConnection();

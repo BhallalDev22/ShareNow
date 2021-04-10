@@ -16,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +43,11 @@ public class FileController {
     @GetMapping("/fileInfo")
     public List<FileInfo> getAllFiles() {
         return fileInfoStorageDbService.getAllFileInfo();
+    }
+
+    @GetMapping("/fileInfo/{ownerName}")
+    List<FileInfo> getUserFilesInfo(@PathVariable("ownerName") String ownerName) {
+        return fileInfoStorageDbService.getUserFileInfo(ownerName);
     }
 
  /*   @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})

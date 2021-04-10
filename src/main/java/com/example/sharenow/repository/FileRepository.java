@@ -14,6 +14,8 @@ import java.util.List;
 @Repository
 public interface FileRepository extends CrudRepository<FileInfo,String> {
 
+    List<FileInfo> findByOwnerName(String ownerName);
+
     @Query(value = "SELECT * FROM file_info f WHERE (SELECT TIMESTAMPADD(SECOND, f.no_of_hours * 3600, f.upload_timestamp)) < CURRENT_TIMESTAMP", nativeQuery = true)
     List<FileInfo> findFileWithTimeLessThanGivenTime();
 
